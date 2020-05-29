@@ -176,14 +176,26 @@ def scrape_sites(event, download_dir = "C:\\Users\\keith_bailey\\Downloads\\scra
                     if send_keys_to_elements and isinstance(send_keys_to_elements, dict):
 
                         for sendK, sendV in send_keys_to_elements.items():
-                            logger.debug("find element: " + sendV["value"])
-                            elem = driver.find_element_by_xpath(sendV["value"])
+                            if sendV["value"] == "SEND_KEYS-ENTER":
+                                elem.send_keys(Keys.RETURN)
+                                time.sleep(delay)
+                                driver.get_screenshot_as_file(
+                                    tmp_path_screenshots +
+                                    "step-" +
+                                    str(step) +
+                                    "hiitEnterInSendKey-" +
+                                    time.strftime(strftime_format) +
+                                    ".png"
+                                )
+                            else:
+                                logger.debug("find element: " + sendV["value"])
+                                elem = driver.find_element_by_xpath(sendV["value"])
 
-                            logger.debug("clear element: " + sendV["value"])
-                            elem.clear()
+                                logger.debug("clear element: " + sendV["value"])
+                                elem.clear()
 
-                            logger.debug("send key to element: " + sendV["value"])
-                            elem.send_keys(sendV["send_key"])
+                                logger.debug("send key to element: " + sendV["value"])
+                                elem.send_keys(sendV["send_key"])
 
                         if final_click == "SEND_KEYS-ENTER":
                             elem.send_keys(Keys.RETURN)
