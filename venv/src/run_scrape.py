@@ -14,8 +14,6 @@ result = scrape_sites(selenium_commands)
 body = ast.literal_eval(result["body"])
 message = ast.literal_eval(body["message"])
 processing_results = message["processing_results"]
-print(processing_results[1]["local_location"])
-print(processing_results[1]["zip_name"])
 
 # loop through all files in directory and copy over
 src = processing_results[1]["local_location"] + "\\download\\"
@@ -25,18 +23,25 @@ for file_name in src_files:
     if os.path.isfile(full_file_name):
         shutil.copy(full_file_name, "concur_zip.zip")
         
-# unzip file & rename csv to concur_output.csv
-import zipfile
-location = "./report_output/"
-with zipfile.ZipFile("./concur_zip.zip", 'r') as zip_ref:
-    zip_ref.extractall(location)
-
 # delete concur_report.csv so we can create a new one without issue
-os.remove(location + "concur_report.csv")
+if os.path.exists("demofile.txt"):
+  os.remove(location + "concur_report.csv")
+else:
+  logger.info("concur_report.csv does not exist")
 
-for file_name in os.listdir(location):
-    if file_name.endswith('.csv'):
-        os.rename(location + file_name, location + "concur_report.csv")
-    else:
-        os.remove(location + file_name)
+if processing_results[1]["status"]["get_url"] == "success" and processing_results[1]["status"]["get_url"] == "success" and processing_results[1]["status"]["get_url"] == "success":
+
+    # unzip file & rename csv to concur_output.csv
+    import zipfile
+
+    location = "./report_output/"
+    with zipfile.ZipFile("./concur_zip.zip", 'r') as zip_ref:
+        zip_ref.extractall(location)
+
+    for file_name in os.listdir(location):
+        if file_name.endswith('.csv'):
+            os.rename(location + file_name, location + "concur_report.csv")
+        else:
+            os.remove(location + file_name)
+
 
