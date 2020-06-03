@@ -21,3 +21,17 @@ The main script fires reads in the xlsx file in docs, converts it to a dictionar
 As this project was initially being used to download reports from Concur that otherwise have to be done manually, I have also included very specific steps to fetch the donlaoded report, unzip and overwrite and retain the Concur output needed, ready for processing by whichever application needs it.
 
 For most use cases you will want to separate the processing of the results from the manipulation of downloaded reports / page source which I have not done here. 
+
+### Understanding return from scrape_sites
+"processing_results" - array of results of each corresponding command line in the xpath xlsx.
+"processing_status" - overall status of the process. I.e. if all 10 commands in the xpath xlsx are successful, return will be success, some successes returns "partial-success", no success or major error returns "failure" .
+
+You can also inspect the processing of each command line result within processing_results array:
+
+step - name of step per xpath xlsx.
+
+status - the status of each sub process, from page loading (get_url), sending data to the page (send_keys), button clicking (css_button#/css_empty) and final_click.
+
+local_location - name of temp directory being used for this line in xpath xlsx.
+
+zip_name - the name of the zip file that was created, which includes, page_source, download & screenshots (useful for debugging) sub-directories and content as instructed in xpath xlsx.
