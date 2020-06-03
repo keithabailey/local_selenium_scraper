@@ -28,7 +28,7 @@ For most use cases you will want to separate the processing of the results from 
 "processing_status" - overall status of the process. I.e. if all 10 commands in the xpath xlsx are successful, return will be success, some successes returns "partial-success", no success or major error returns "failure" .
 
 
-##### You can also inspect the processing of each command line result within processing_results array:
+#### You can also inspect the processing of each command line result within processing_results array:
 
 step - name of step per xpath xlsx.
 
