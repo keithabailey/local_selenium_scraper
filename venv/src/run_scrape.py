@@ -24,7 +24,9 @@ for file_name in src_files:
         shutil.copy(full_file_name, "concur_zip.zip")
         
 # delete concur_report.csv so we can create a new one without issue
-if os.path.exists("demofile.txt"):
+location = "./report_output/"
+
+if os.path.exists(location + "concur_report.csv"):
   os.remove(location + "concur_report.csv")
 else:
   logger.info("concur_report.csv does not exist")
@@ -34,7 +36,6 @@ if processing_results[1]["status"]["get_url"] == "success" and processing_result
     # unzip file & rename csv to concur_output.csv
     import zipfile
 
-    location = "./report_output/"
     with zipfile.ZipFile("./concur_zip.zip", 'r') as zip_ref:
         zip_ref.extractall(location)
 
