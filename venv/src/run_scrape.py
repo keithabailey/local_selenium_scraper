@@ -8,7 +8,7 @@ from excel_xpath_to_json import build_selenium_commands
 from local_scraper import scrape_sites
 
 selenium_commands = build_selenium_commands(file_path = '../docs/concur_grab_xpath_new.xlsx')
-result = scrape_sites(selenium_commands)
+result = scrape_sites(selenium_commands, download_dir = "C:/Users/keith_bailey/Downloads/scrape-data/")
 
 # grab zip (only one for concur), unzip and rename file
 body = ast.literal_eval(result["body"])

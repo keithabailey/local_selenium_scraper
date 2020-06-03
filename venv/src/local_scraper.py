@@ -15,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-def scrape_sites(event, download_dir = "C:\\Users\\keith_bailey\\Downloads\\scrape-data\\"):
+def scrape_sites(event, download_dir):
 
     def is_empty(any_structure):
         if any_structure:
