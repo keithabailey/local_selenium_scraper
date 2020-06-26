@@ -150,6 +150,7 @@ def scrape_sites(event, download_dir):
             logger.info(urls)
             try:
                 driver.get(urls)
+                driver.execute_script("window.onbeforeunload = function() {};")
                 time.sleep(delay)
                 html_str = driver.page_source
 
@@ -228,12 +229,12 @@ def scrape_sites(event, download_dir):
                         logger.info(cssV["buttonCSS"])
                         try:
                             button = driver.find_element_by_xpath(cssV["buttonCSS"])
+                            button.click()
                             status["css_button" + str(cssK)] = "success"
                         except:
                             logger.warning("Cannot find element: " + cssV["buttonCSS"])
                             status["css_button" + str(cssK)] = "Cannot find element: " + cssV["buttonCSS"]
                         else:
-                            button.click()
                             time.sleep(short_delay)
                             driver.get_screenshot_as_file(
                                 tmp_path_screenshots +
@@ -266,12 +267,12 @@ def scrape_sites(event, download_dir):
                                 ".png"
                             )
                             button = driver.find_element_by_xpath(final_click)
+                            button.click()
                         except:
                             logger.warning("ERROR - unable to click final click")
                             logger.warning("Cannot find elemennt: " + final_click)
                             status["final_click"] = "failure"
                         else:
-                            button.click()
                             time.sleep(delay)
                             driver.get_screenshot_as_file(
                                 tmp_path_screenshots +
