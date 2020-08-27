@@ -1,12 +1,7 @@
 import pandas as pd
 import operator
 
-# files to loop through
-pass
 
-
-# make field headings generic
-pass
 files = [r"C:\Users\keith_bailey\Documents\MarketData2\ABTTO_dataMarketData2020-06-03_14.47.41.csv", r"C:\Users\keith_bailey\Documents\MarketData2\APPN_dataMarketData2020-08-11_20.55.41.csv"]
 print(files)
 
@@ -62,8 +57,7 @@ for file in files:
     cols_to_rows.remove("co_name")
 
     tidy_df = pd.melt(clean_df, id_vars=["Period", "co_name"], value_vars=cols_to_rows)
-
-    print(tidy_df)
+    tidy_df.dropna(subset = ["value"], inplace=True)
 
     if not isinstance(consol_df, pd.DataFrame):
         consol_df = tidy_df
@@ -71,7 +65,9 @@ for file in files:
         frames = [consol_df, tidy_df]
         consol_df = pd.concat(frames, ignore_index=True)
 
-# print(consol_df)
+
+
+print(consol_df)
 
 
 
