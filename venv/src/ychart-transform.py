@@ -1,18 +1,30 @@
 import pandas as pd
+import numpy as np
 import operator
+import glob
+import datetime
+
+csv_list = [f for f in glob.glob(r"C:\Users\keith_bailey\Documents\MarketData2\*.csv")]
+
+# construct dataframe of the files
+csv_series= pd.Series(csv_list)
+file_list = csv_series[csv_series.str.match("(.*_dataEstimates.*|.*_dataMarketData.*)")]
+
+time_stamp = file_list.str.extract("([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9])", expand=False)
+time_stamp = [datetime.datetime.strptime(x,"%Y-%m-%d_%H.%M.%S") for x in time_stamp]
 
 
-files = [r"C:\Users\keith_bailey\Documents\MarketData2\ABTTO_dataMarketData2020-06-03_14.47.41.csv", r"C:\Users\keith_bailey\Documents\MarketData2\APPN_dataMarketData2020-08-11_20.55.41.csv"]
-print(files)
+files_df = pd.DataFrame(list(zip(file_list, time_stamp)),
+                columns = ["file_name","time_stamp"])
 
 consol_df = None
 
-for file in files:
+for index, row in files_df.iterrows():
 
-    data = pd.read_csv(file)
+    data = pd.read_csv(row["file_name"])
     # properly timestamp data to allow for proper aggregation of multiple files
 
-    def clean_table(df):
+    def clean_table(df, timest):
 
         def allsame(seq):
             "Determines whether all the elements in a sequence are the same."
@@ -34,7 +46,7 @@ for file in files:
         def clean_leading_columns(cols):
             leading_column_string = getcommonstart(cols)
 
-            #clean_up
+            # clean_up columns
             cols = [s.replace(leading_column_string, '') for s in cols]
             cols = [s.replace("(", '') for s in cols]
             cols = [s.replace(")", '') for s in cols]
@@ -42,21 +54,22 @@ for file in files:
             return leading_column_string, cols;
         co_name, clean_cols = clean_leading_columns(df.columns[1:])
         clean_cols = [df.columns[0]] + clean_cols
-        # add new column to df
+        # add new columns to df
         df.columns = clean_cols
         df['co_name'] = co_name
+        df['created_time'] = timest
 
         return df
-        #print(co_name)
-        #print(clean_cols)
 
-    clean_df = clean_table(data)
+
+    clean_df = clean_table(data, row["time_stamp"])
 
     cols_to_rows = list(clean_df.columns)
     cols_to_rows.remove("Period")
     cols_to_rows.remove("co_name")
+    cols_to_rows.remove("created_time")
 
-    tidy_df = pd.melt(clean_df, id_vars=["Period", "co_name"], value_vars=cols_to_rows)
+    tidy_df = pd.melt(clean_df, id_vars=["Period", "co_name","created_time"], value_vars=cols_to_rows)
     tidy_df.dropna(subset = ["value"], inplace=True)
 
     if not isinstance(consol_df, pd.DataFrame):
@@ -65,9 +78,20 @@ for file in files:
         frames = [consol_df, tidy_df]
         consol_df = pd.concat(frames, ignore_index=True)
 
+consol_df.to_csv("full_historical_data.csv")
 
+consol_df_gb = consol_df.groupby(['Period','co_name','variable'])\
+    .apply(lambda x: x.sort_values(['created_time'], ascending = False)).\
+    reset_index(drop=True)
 
-print(consol_df)
+print(consol_df_gb)
 
+final = consol_df_gb.groupby(['Period','co_name','variable']).head(1)
+
+final.to_csv("top_records.csv")
+
+print(final)
+
+# group by period, co_name and then take top record only
 
 
