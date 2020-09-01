@@ -15,7 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-def scrape_sites(event, download_dir):
+def scrape_sites(event, download_dir, headless = True):
 
     def is_empty(any_structure):
         if any_structure:
@@ -50,13 +50,15 @@ def scrape_sites(event, download_dir):
     options = webdriver.ChromeOptions()
 
     driver_path = "../bin/chromedriver.exe"
-    # options.binary_location = './bin/headless-chromium'
+    # options.binary_location = '../bin/headless-chromium'
 
     # options.add_argument('--disable-dev-shm-usage')
-    # options.add_argument('--headless')
+    if headless == True:
+        options.add_argument('--headless')
+
     # options.add_argument('--no-sandbox')
     # options.add_argument('--single-process')
-    #
+
     # options.add_argument('--disable-gpu')
     # options.add_argument('--window-size=1280x1696')
     # options.add_argument('--user-data-dir={}'.format(tmp_folder + '/user-data'))
@@ -67,13 +69,6 @@ def scrape_sites(event, download_dir):
     # # #options.add_argument('--ignore-certificate-errors')
     # options.add_argument('--homedir={}'.format(tmp_folder))
     # options.add_argument('--disk-cache-dir={}'.format(tmp_folder + '/cache-dir'))
-
-    # prefs = {"profile.default_content_settings.popups": 0,
-    #          "download.prompt_for_download": False,
-    #          "safebrowsing_for_trusted_sources_enabled": False,
-    #          "safebrowsing.enabled": False,
-    #          "download.default_directory": download_dir,
-    #          "directory_upgrade": True}
 
     prefs = {"profile.default_content_settings.popups": 0,
                    "download.prompt_for_download": "false",
@@ -155,7 +150,7 @@ def scrape_sites(event, download_dir):
                 html_str = driver.page_source
 
                 if html_str == '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body></body></html>' or "This site can’t be reached" in html_str:
-                    logger.warning("unable to connect to " + urls)
+                    logger.warning("unable to connect to " + urls + " - step: " + step)
                     status["get_url"] = "failure"
                 else:
                     status["get_url"] = "success"
@@ -163,7 +158,7 @@ def scrape_sites(event, download_dir):
                 pass
                 # break out of for loop
                 # respond with failure
-                logger.warning("unable to connect to " + urls)
+                logger.warning("unable to connect to " + urls + " - step: " + step)
                 status["get_url"] = "failure"
                 continue
 
@@ -214,8 +209,8 @@ def scrape_sites(event, download_dir):
                     pass
                     # break out of for loop
                     # respond with failure
-                    logger.warning("unable to send keys for " + urls)
-                    status["send_keys"] = "unable to send keys for " + urls
+                    logger.warning("unable to send keys for " + urls + " - step: " + step)
+                    status["send_keys"] = "unable to send keys for "
                     continue
 
 
@@ -246,7 +241,7 @@ def scrape_sites(event, download_dir):
                             )
 
                 else:
-                    logger.info("css button empty")
+                    logger.info("css button empty" + " - step: " + step)
                     status["css_button_empty"] = "success"
 
                 logger.info("   --/css_buttons---   ")
@@ -269,8 +264,8 @@ def scrape_sites(event, download_dir):
                             button = driver.find_element_by_xpath(final_click)
                             button.click()
                         except:
-                            logger.warning("ERROR - unable to click final click")
-                            logger.warning("Cannot find elemennt: " + final_click)
+                            logger.warning("ERROR - unable to click final click"  + " - step: " + step)
+                            logger.warning("Cannot find elemennt: " + final_click  + " - step: " + step)
                             status["final_click"] = "failure"
                         else:
                             time.sleep(delay)
@@ -314,7 +309,7 @@ def scrape_sites(event, download_dir):
                             f.write(html_str)
 
                 except:
-                    logger.info("Unable to save page source - check step name")
+                    logger.info("Unable to save page source"  + " - step: " + step)
                 #zip files
 
                 def zipdir(path, ziph):
