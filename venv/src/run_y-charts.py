@@ -9,7 +9,7 @@ from local_scraper import scrape_sites
 import time
 
 selenium_commands = build_selenium_commands(file_path = '../docs/marketdata_grab_xpath.xlsx')
-selenium_commands = build_selenium_commands(file_path = '../docs/qtryoygrowth_grab_xpath.xlsx')
+#selenium_commands = build_selenium_commands(file_path = '../docs/qtryoygrowth_grab_xpath.xlsx')
 # selenium_commands = build_selenium_commands(file_path = '../docs/sevicenow.xlsx')
 result = scrape_sites(selenium_commands,
                       download_dir = "C:\\Users\\keith_bailey\\Downloads\\scrape-data\\",
